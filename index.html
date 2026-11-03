@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Los · Full-Stack Developer</title>
+  <title>lotlos-portfolio</title>
   <meta name="description" content="Portfolio of Los, a full-stack developer and ISTAD student from Cambodia." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -80,7 +80,7 @@
           Hi, I’m <span id="name" class="text-neon">Los</span>
         </h1>
         <p class="mt-5 font-cyber font-semibold text-xl sm:text-3xl min-h-[2.5rem]"><span id="role" class="caret"></span></p>
-        <p class="mt-6 max-w-lg text-lg text-soft leading-relaxed">Student at ISTAD in Cambodia. I build full-stack apps with a focus on Khmer-first products.</p>
+        <p class="mt-6 max-w-lg text-lg text-soft leading-relaxed">Student at NU & ISTAD in Cambodia majoring in IT field. I am passionate about creating innovative solutions and continuously expanding my knowledge in the field of technology.</p>
         <div class="mt-9 flex flex-wrap gap-4">
           <button data-go="projects" class="px-7 py-3 rounded-full bg-neon text-[#06140c] font-semibold hover:brightness-110">View projects</button>
           <button data-go="contact" class="px-7 py-3 rounded-full border border-white/30 font-semibold hover:border-neon hover:text-neon">Get in touch</button>
@@ -112,7 +112,7 @@
       <div class="mx-auto max-w-5xl px-6 py-14 text-center">
         <h2 class="font-cyber font-black uppercase text-3xl sm:text-5xl">Find me</h2>
         <div class="mt-8 flex flex-wrap justify-center gap-3 text-sm font-semibold">
-          <a class="px-5 py-2.5 rounded-full border border-line hover:border-neon hover:text-neon" href="https://github.com/your-username">GitHub</a>
+          <a class="px-5 py-2.5 rounded-full border border-line hover:border-neon hover:text-neon" href="https://github.com/loslot">GitHub</a>
           <a class="px-5 py-2.5 rounded-full border border-line hover:border-neon hover:text-neon" href="https://t.me/your-username">Telegram</a>
           <a class="px-5 py-2.5 rounded-full border border-line hover:border-neon hover:text-neon" href="https://facebook.com/your-username">Facebook</a>
           <a class="px-5 py-2.5 rounded-full border border-line hover:border-neon hover:text-neon" href="https://linkedin.com/in/your-username">LinkedIn</a>
@@ -137,47 +137,67 @@ const si = (n) => `https://cdn.jsdelivr.net/npm/simple-icons@11.0.0/icons/${n}.s
 const LEVELS = { 1: ["Learning", 30], 2: ["Comfortable", 65], 3: ["Strong", 90] };
 // [name, level, logo url or null, whiteLogo (true for black logos)]
 const SKILLS = [
-  ["languages", [["Python", 3, dv("python")], ["C++", 2, dv("cplusplus")], ["JavaScript", 2, dv("javascript")]]],
-  ["web_frontend", [["HTML", 3, dv("html5")], ["CSS", 3, dv("css3")], ["Tailwind CSS", 2, dv("tailwindcss")], ["Next.js", 2, dv("nextjs"), true]]],
+  ["machine_learning", [["Pandas", 3, dv("pandas"), true], ["NumPy", 2, dv("numpy")], ["Scikit-learn", 2, dv("scikitlearn")], ["Pytorch", 2, dv("pytorch")]] ],
+
+  ["languages", [["Python", 3, dv("python")], ["C++", 2, dv("cplusplus")], ["JavaScript", 2, dv("javascript")], ["Java", 2, dv("java")]] ],
+
+  ["web_frontend", [["HTML", 3, dv("html5")], ["CSS", 3, dv("css3")], ["Tailwind CSS", 2, dv("tailwindcss")], ["Next.js", 2, dv("nextjs")],
+                  ["Bootstrap", 2, dv("bootstrap")], ["React", 2, dv("react")], ["Vue.js", 2, dv("vuejs")], ["Redux", 2, dv("redux")],
+                ["Motion", 2, dv("motion")]] ], 
+
   ["backend_services", [["FastAPI", 2, dv("fastapi")], ["Flask", 2, dv("flask"), true], ["REST APIs", 2, null]]],
-  ["databases", [["PostgreSQL", 2, dv("postgresql")], ["Oracle XE", 2, dv("oracle")], ["Google Sheets", 2, si("googlesheets"), true]]],
-  ["desktop_and_tools", [["PyQt6", 2, dv("qt")], ["Git", 2, dv("git")], ["GitHub", 2, dv("github"), true], ["Arch Linux", 1, dv("archlinux")]]],
+
+
+  ["databases", [["PostgreSQL", 2, dv("postgresql")], ["PHP", 2, dv("php")], ["Laravel", 2, dv("laravel")], ["Google Sheets", 2, si("googlesheets"), true]]],
+
+
+  ["desktop_and_tools", [["PyQt6", 2, dv("qt")], ["Git", 2, dv("git")], ["GitHub", 2, dv("github"), true], ["Arch Linux", 1, dv("archlinux")], 
+  ["Vscode", 3, dv("vscode")], ["Intellij IDEA", 1, dv("intellij")], ["Kaggle", 1, dv("kaggle")], ["Gitlab", 1, dv("gitlab")] ]],
 ];
 
-const CERTS = [ // put your images in a "certs" folder next to index.html, then edit these
-  { t: "Your certificate title", i: "Issuer name", y: "20XX", img: "certs/certificate-1.jpg" },
-  { t: "Your certificate title", i: "Issuer name", y: "20XX", img: "certs/certificate-2.jpg" },
-  { t: "Your certificate title", i: "Issuer name", y: "20XX", img: "certs/certificate-3.jpg" },
+const CERTS = [ // put your images in a "certs" folder next to index.html, then edit thes
+  { t: "Full-Stack Web Development", i: "ISTAD", y: "2026", img: "certs/full-stack.png" },
+  { t: "YLP Graduation", i: "JCI Phnom Penh", y: "2026", img: "certs/jci.png" },
+  { t: "YLP Graduation", i: "JCI Phnom Penh", y: "2026", img: "certs/ylp.png" },
+
+   { t: "Full-Stack Web Development", i: "ISTAD", y: "2026", img: "certs/full-stack.png" },
+  { t: "YLP Graduation", i: "JCI Phnom Penh", y: "2026", img: "certs/jci.png" },
+  { t: "YLP Graduation", i: "JCI Phnom Penh", y: "2026", img: "certs/ylp.png" },
+
+   { t: "Full-Stack Web Development", i: "ISTAD", y: "2026", img: "certs/full-stack.png" },
+  { t: "YLP Graduation", i: "JCI Phnom Penh", y: "2026", img: "certs/jci.png" },
+  { t: "YLP Graduation", i: "JCI Phnom Penh", y: "2026", img: "certs/ylp.png" },
 ];
 
 const PROJECTS = [ // put screenshots in an "images" folder next to index.html
-  { n: "DengMun ដឹងមុន", c: "Web", img: "images/dengmun.png", d: "A Khmer-first scam checker. Paste a message, link, or number and see whether it looks like a scam.", s: ["Next.js", "FastAPI", "PostgreSQL"], l: [["Site", "#"], ["Code", "#"]] },
-  { n: "SastraCode", c: "Web", img: "images/sastracode.png", d: "A Khmer-language coding education platform with its own branding and presentation decks.", s: ["Frontend", "Branding"], l: [["Site", "#"]] },
-  { n: "JobZ", c: "Web", img: "images/jobz.png", d: "A job board with a homepage, reusable components, and custom styling.", s: ["Next.js 15"], l: [["Site", "#"], ["Code", "#"]] },
-  { n: "LOSA SuperMart", c: "Web", img: "images/losa-supermart.png", d: "A full-stack supermarket management system for products, sales, and records.", s: ["Flask", "Oracle XE"], l: [["Code", "#"]] },
-  { n: "IT Asset Tracker", c: "Desktop", img: "images/it-asset-tracker.png", d: "A desktop tool that tracks IT equipment and syncs it to Google Sheets through an Apps Script REST API.", s: ["C++", "Google Sheets"], l: [["Code", "#"]] },
-  { n: "Fantasy Realm", c: "Game", img: "images/fantasy-realm.png", d: "A fantasy RPG with combat, saved progress, and an admin mode.", s: ["Python", "PyQt6"], l: [["Code", "#"]] },
+  { n: "DengMun ដឹងមុន", c: "Web", img: "/project/dengmun.png", d: "A Khmer-first scam checker. Paste a message, link, or number and see whether it looks like a scam.", s: ["Next.js", "FastAPI", "PostgreSQL"], l: [["Site", "#"], ["Code", "#"]] },
+  { n: "SastraCode", c: "Web", img: "/project/sastracode.png", d: "A Khmer-language coding education platform with its own branding and presentation decks.", s:["Next.js", "Spring Boot", "PostgreSQL"], l: [["Site", "#"]] },
+  { n: "JobZ", c: "Web", img: "/project/jobz.png", d: "A job board with a homepage, reusable components, and custom styling.", s: ["Next.js", "API"], l: [["Site", "#"], ["Code", "#"]] },
+  { n: "LOSA SuperMart", c: "Web", img: "/project/losa-supermart.png", d: "A full-stack supermarket management system for products, sales, and records.", s: ["Flask", "Oracle XE", "Access"], l: [["Code", "#"]] },
+  { n: "IT Asset Tracker", c: "Desktop", img: "/project/it-asset-tracker.png", d: "A desktop tool that tracks IT equipment and syncs it to Google Sheets through an Apps Script REST API.", s: ["C++", "Google Sheets"], l: [["Code", "#"]] },
+  { n: "Fantasy Realm", c: "Game", img: "/project/fantasy-realm.png", d: "A fantasy RPG with combat, saved progress, and an admin mode.", s: ["Python", "PyQt6"], l: [["Code", "#"]] },
 ];
 let projFilter = "All";
 
 const SCHOOLS = [
-  { n: "ISTAD", m: "Technology institute · Cambodia", d: "Student at ISTAD, building full-stack projects alongside classes.", now: true },
-  { n: "Online courses", m: "Add your own", d: "List the courses, bootcamps, or schools you have learned from.", ph: true },
+  { n: "NU", m: "Norton University(3rd Year Student)", d: "I am currently pursuing my bachelor's degree of computer science at Norton University.", now: true },
+  { n: "ISTAD", m: "Institute of Science and Technology Advanced Development(ITE 3rd Generation)", d: "Current student at ISTAD, study Full-stack Web Development & AI Engineering.", now: true },
+  // { n: "Online courses", m: "Add your own", d: "List the courses, bootcamps, or schools you have learned from.", ph: true },
 ];
 
 const TIMELINE = [ // replace 20XX with real years
   "# My timeline",
-  "## 20XX — Starting out",
+  "## 2024 — Starting out",
   "- Wrote my first lines of code.",
   "",
-  "## 20XX — Learning the web",
+  "## 2025 — Learning the web",
   "- HTML, CSS, and JavaScript.",
   "",
-  "## 20XX — Full-stack projects",
-  "- Flask, FastAPI, Next.js, and databases.",
+  "## 2026 — Full-stack projects",
+  "- Java, Spring Boot, Next.js, PostgreSQL and Docker Compose.",
   "",
   "## Now — ISTAD",
-  "- Building DengMun, a Khmer-first scam checker.",
+  "- AI Engineering, ML, DL, LLM, NLP, CNN, RNN, python, PyTorch, Pandas, NumPy, Scikit-learn, FastAPI, Next.js.",
 ];
 
 /* ---------- Render ---------- */
@@ -189,12 +209,22 @@ const win = (name, body) => `<div class="rounded-2xl border border-line bg-panel
   <div class="flex items-center gap-2 px-4 py-3 border-b border-line"><i class="h-3 w-3 rounded-full bg-[#ff5f56]"></i><i class="h-3 w-3 rounded-full bg-[#ffbd2e]"></i><i class="h-3 w-3 rounded-full bg-[#27c93f]"></i><span class="ml-3 font-mono text-xs text-soft">${name}</span></div>${body}</div>`;
 
 const VIEWS = {
-  about: () => title("About me") + win("guest@los.dev: ~ (bash)", `<div class="p-6 font-mono text-sm sm:text-base leading-relaxed space-y-5">
-    <div><p><span class="text-neon">guest@los.dev:~$</span> whoami</p>
-    <p class="mt-1">I’m a full-stack developer from <span class="text-neon">Cambodia</span>. I study at ISTAD and build web apps, desktop tools, and games, on my own and in teams.</p></div>
-    <div><p><span class="text-neon">guest@los.dev:~$</span> cat focus.txt</p>
-    <p class="mt-1 text-soft">// What I care about:</p>
-    <p>› products that read and feel natural in Khmer</p><p>› clean interfaces with careful details</p><p>› shipping real projects, not just tutorials</p></div></div>`),
+about: () => title("About me") + win("guest@los.dev: ~ (bash)", `<div class="p-6 font-mono text-sm sm:text-base leading-relaxed space-y-5">
+    <div>
+        <p><span class="text-neon">guest@los.dev:~$</span> whoami</p>
+        <p class="mt-1">I’m a <span class="text-neon">Full-Stack Developer</span> and aspiring <span class="text-neon">AI Engineer</span> from Cambodia. I build modern web applications, desktop tools, and intelligent systems, combining software engineering with AI technologies to solve real-world problems.</p>
+    </div>
+
+    <div>
+        <p><span class="text-neon">guest@los.dev:~$</span> cat focus.txt</p>
+        <p class="mt-1 text-soft">// What I focus on:</p>
+        <p>› building scalable full-stack applications</p>
+        <p>› exploring AI, machine learning, and intelligent systems</p>
+        <p>› integrating AI into practical software solutions</p>
+        <p>› designing clean, intuitive user experiences</p>
+        <p>› turning ideas into real-world products</p>
+    </div>
+</div>`),
 
   skills: () => title("Skills") + `<div class="grid lg:grid-cols-2 gap-6">${SKILLS.map(([g, items]) =>
     `<div class="rounded-2xl border border-line bg-panel/85 p-5 ${items.length > 3 ? "lg:col-span-2" : ""}"><h3 class="font-mono text-neon text-sm pb-3 mb-4 border-b border-line">./${g}</h3>
