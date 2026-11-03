@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Los · Full-Stack Developer</title>
+  <meta name="description" content="Portfolio of Los, a full-stack developer and ISTAD student from Cambodia." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Chakra+Petch:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Kantumruy+Pro:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        fontFamily: {
+          cyber: ['Orbitron', '"Kantumruy Pro"', 'sans-serif'],
+          body: ['"Chakra Petch"', '"Kantumruy Pro"', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace'],
+        },
+        colors: { bg: '#141A24', panel: '#1B2332', line: '#2B3750', neon: '#39FF88', soft: '#C3CEDF' },
+      } },
+    };
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { background: #141A24; }
+    #bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
+    .layer { position: relative; z-index: 1; }
+    :focus-visible { outline: 3px solid #39FF88; outline-offset: 3px; border-radius: 6px; }
+
+    /* custom cursor (fine pointers only) */
+    html.cur-on, html.cur-on * { cursor: none !important; }
+    .cur-dot, .cur-ring { position: fixed; left: 0; top: 0; pointer-events: none; z-index: 100; display: none; border-radius: 50%; }
+    html.cur-on .cur-dot, html.cur-on .cur-ring { display: block; }
+    .cur-dot { width: 8px; height: 8px; margin: -4px 0 0 -4px; background: #39FF88; box-shadow: 0 0 12px #39FF88; }
+    .cur-ring { width: 38px; height: 38px; margin: -19px 0 0 -19px; border: 1.5px solid #39FF88; transition: width .2s, height .2s, margin .2s, background .2s; }
+    .cur-ring.big { width: 64px; height: 64px; margin: -32px 0 0 -32px; background: rgba(57,255,136,.12); }
+
+    /* spotlight on cards follows the pointer */
+    .glow { position: relative; overflow: hidden; transition: transform .15s ease-out, border-color .2s; will-change: transform; }
+    .glow::before { content: ""; position: absolute; inset: 0; opacity: 0; transition: opacity .25s; pointer-events: none;
+      background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%), rgba(57,255,136,.18), transparent 70%); }
+    .glow:hover::before { opacity: 1; }
+    .glow > * { position: relative; z-index: 1; }
+    .glow:hover { border-color: #39FF88; }
+
+    .panel { animation: show .35s ease-out; }
+    .bar { transition: width .9s cubic-bezier(.2,.8,.2,1); }
+    @keyframes pop { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
+    .stag { animation: pop .55s cubic-bezier(.2,.8,.2,1) backwards; animation-delay: calc(var(--i, 0) * 55ms); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .ring-spin { background: conic-gradient(from 0deg, #39FF88, transparent 40%, #39FF88 60%, transparent 85%, #39FF88); animation: spin 6s linear infinite; filter: drop-shadow(0 0 14px rgba(57,255,136,.55)); }
+    [data-go], [data-mag] { transition: transform .2s ease-out, background .2s, color .2s; }
+    @media (max-width: 639px) { #ind { display: none; } .tab[aria-selected="true"] { background: rgba(57,255,136,.1); box-shadow: inset 0 -2px 0 #39FF88; } }
+    .pulse, .orbit, .ring-spin { pointer-events: none; }
+    .pulse { position: absolute; inset: -4px; border-radius: 50%; border: 2px solid #39FF88; opacity: 0; animation: pulse 2.8s ease-out infinite; }
+    @keyframes pulse { from { transform: scale(1); opacity: .6; } to { transform: scale(1.28); opacity: 0; } }
+    .orbit { position: absolute; inset: -16px; border-radius: 50%; border: 1px dashed rgba(57,255,136,.45); animation: spin 16s linear infinite reverse; }
+    .orbit::after { content: ""; position: absolute; top: -4px; left: 50%; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: #39FF88; box-shadow: 0 0 12px #39FF88; }
+    @keyframes show { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .caret::after { content: "▌"; color: #39FF88; margin-left: 2px; animation: blink 1s steps(2) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .code-row { display: grid; grid-template-columns: 2.5rem 1fr; gap: 1rem; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .panel, .caret::after { animation: none; } .bar { transition: none; } .stag, .ring-spin, .pulse, .orbit { animation: none; } #ind { transition: none; } }
+  </style>
+</head>
+<body class="font-body text-white antialiased">
+  <canvas id="bg" aria-hidden="true"></canvas>
+  <div class="cur-dot" id="dot"></div><div class="cur-ring" id="ring"></div>
+  <div id="prog" class="fixed top-0 left-0 h-0.5 w-full bg-neon z-[95] origin-left" style="transform:scaleX(0)"></div>
+  <div id="lb" class="fixed inset-0 z-[90] hidden items-center justify-center bg-black/85 p-4" role="dialog" aria-modal="true" aria-label="Certificate preview">
+    <img id="lbimg" alt="" class="max-h-full max-w-full rounded-lg border border-line" />
+  </div>
+
+  <div class="layer">
+    <!-- Hero -->
+    <header class="mx-auto max-w-5xl px-6 pt-16 sm:pt-24 pb-14 grid md:grid-cols-[1fr_auto] gap-10 items-center">
+      <div>
+        <h1 class="font-cyber font-black uppercase leading-[1.05] text-4xl sm:text-6xl">
+          Hi, I’m <span id="name" class="text-neon">Los</span>
+        </h1>
+        <p class="mt-5 font-cyber font-semibold text-xl sm:text-3xl min-h-[2.5rem]"><span id="role" class="caret"></span></p>
+        <p class="mt-6 max-w-lg text-lg text-soft leading-relaxed">Student at ISTAD in Cambodia. I build full-stack apps with a focus on Khmer-first products.</p>
+        <div class="mt-9 flex flex-wrap gap-4">
+          <button data-go="projects" class="px-7 py-3 rounded-full bg-neon text-[#06140c] font-semibold hover:brightness-110">View projects</button>
+          <button data-go="contact" class="px-7 py-3 rounded-full border border-white/30 font-semibold hover:border-neon hover:text-neon">Get in touch</button>
+          <a href="cv.pdf" download="Los-CV.pdf" data-mag class="inline-flex items-center gap-2 px-7 py-3 rounded-full border border-neon text-neon font-semibold hover:bg-neon hover:text-[#06140c]">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>Download CV</a>
+        </div>
+      </div>
+      <!-- Replace photo.jpg with your own picture (same folder as this file) -->
+      <div id="avatar" class="relative justify-self-center h-56 w-56 sm:h-64 sm:w-64 transition-transform duration-200">
+        <div class="pulse"></div>
+        <div class="orbit"></div>
+        <div class="ring-spin absolute -inset-1 rounded-full"></div>
+        <div class="relative h-full w-full rounded-full bg-panel grid place-items-center overflow-hidden border-4 border-bg">
+          <span class="font-cyber font-black text-6xl text-neon">L</span>
+          <img src="/profile/photo.png" alt="Portrait of Los" class="absolute inset-0 h-full w-full object-cover" onerror="this.remove()" />
+        </div>
+      </div>
+    </header>
+
+    <!-- Tabs -->
+    <div class="sm:sticky sm:top-0 z-20 bg-bg/85 backdrop-blur border-y border-line" id="tabs">
+      <div role="tablist" aria-label="Portfolio sections" class="relative mx-auto max-w-5xl px-2 sm:px-4 grid grid-cols-3 sm:flex sm:overflow-x-auto gap-1" id="tablist"></div>
+    </div>
+
+    <main class="mx-auto max-w-5xl px-6 py-14 min-h-[60vh]" id="panels"></main>
+
+    <!-- Contact -->
+    <footer id="contact" class="border-t border-line bg-bg/80 backdrop-blur">
+      <div class="mx-auto max-w-5xl px-6 py-14 text-center">
+        <h2 class="font-cyber font-black uppercase text-3xl sm:text-5xl">Find me</h2>
+        <div class="mt-8 flex flex-wrap justify-center gap-3 text-sm font-semibold">
+          <a class="px-5 py-2.5 rounded-full border border-line hover:border-neon hover:text-neon" href="https://github.com/your-username">GitHub</a>
+          <a class="px-5 py-2.5 rounded-full border border-line hover:border-neon hover:text-neon" href="https://t.me/your-username">Telegram</a>
+          <a class="px-5 py-2.5 rounded-full border border-line hover:border-neon hover:text-neon" href="https://facebook.com/your-username">Facebook</a>
+          <a class="px-5 py-2.5 rounded-full border border-line hover:border-neon hover:text-neon" href="https://linkedin.com/in/your-username">LinkedIn</a>
+        </div>
+        <p class="mt-8 text-soft">Email me: <a class="text-neon font-semibold hover:underline" href="mailto:loslot100604@gmail.com">loslot100604@gmail.com</a></p>
+        <p class="mt-3 text-sm text-soft/70">© <span id="year"></span> Los. All rights reserved.</p>
+      </div>
+    </footer>
+  </div>
+
+<script>
+/* ---------- Content (edit here) ---------- */
+const TABS = [
+  ["about", "About"], ["skills", "Skills"], ["credentials", "Credentials"],
+  ["projects", "Projects"], ["education", "Education"], ["timeline", "Timeline"],
+];
+const ROLES = ["Full-Stack Developer", "Computer Science", "AI Engineering"];
+
+// Logos load from Devicon / Simple Icons (needs internet). 1 = Learning, 2 = Comfortable, 3 = Strong.
+const dv = (n, v = "original") => `https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/${n}/${n}-${v}.svg`;
+const si = (n) => `https://cdn.jsdelivr.net/npm/simple-icons@11.0.0/icons/${n}.svg`;
+const LEVELS = { 1: ["Learning", 30], 2: ["Comfortable", 65], 3: ["Strong", 90] };
+// [name, level, logo url or null, whiteLogo (true for black logos)]
+const SKILLS = [
+  ["languages", [["Python", 3, dv("python")], ["C++", 2, dv("cplusplus")], ["JavaScript", 2, dv("javascript")]]],
+  ["web_frontend", [["HTML", 3, dv("html5")], ["CSS", 3, dv("css3")], ["Tailwind CSS", 2, dv("tailwindcss")], ["Next.js", 2, dv("nextjs"), true]]],
+  ["backend_services", [["FastAPI", 2, dv("fastapi")], ["Flask", 2, dv("flask"), true], ["REST APIs", 2, null]]],
+  ["databases", [["PostgreSQL", 2, dv("postgresql")], ["Oracle XE", 2, dv("oracle")], ["Google Sheets", 2, si("googlesheets"), true]]],
+  ["desktop_and_tools", [["PyQt6", 2, dv("qt")], ["Git", 2, dv("git")], ["GitHub", 2, dv("github"), true], ["Arch Linux", 1, dv("archlinux")]]],
+];
+
+const CERTS = [ // put your images in a "certs" folder next to index.html, then edit these
+  { t: "Your certificate title", i: "Issuer name", y: "20XX", img: "certs/certificate-1.jpg" },
+  { t: "Your certificate title", i: "Issuer name", y: "20XX", img: "certs/certificate-2.jpg" },
+  { t: "Your certificate title", i: "Issuer name", y: "20XX", img: "certs/certificate-3.jpg" },
+];
+
+const PROJECTS = [ // put screenshots in an "images" folder next to index.html
+  { n: "DengMun ដឹងមុន", c: "Web", img: "images/dengmun.png", d: "A Khmer-first scam checker. Paste a message, link, or number and see whether it looks like a scam.", s: ["Next.js", "FastAPI", "PostgreSQL"], l: [["Site", "#"], ["Code", "#"]] },
+  { n: "SastraCode", c: "Web", img: "images/sastracode.png", d: "A Khmer-language coding education platform with its own branding and presentation decks.", s: ["Frontend", "Branding"], l: [["Site", "#"]] },
+  { n: "JobZ", c: "Web", img: "images/jobz.png", d: "A job board with a homepage, reusable components, and custom styling.", s: ["Next.js 15"], l: [["Site", "#"], ["Code", "#"]] },
+  { n: "LOSA SuperMart", c: "Web", img: "images/losa-supermart.png", d: "A full-stack supermarket management system for products, sales, and records.", s: ["Flask", "Oracle XE"], l: [["Code", "#"]] },
+  { n: "IT Asset Tracker", c: "Desktop", img: "images/it-asset-tracker.png", d: "A desktop tool that tracks IT equipment and syncs it to Google Sheets through an Apps Script REST API.", s: ["C++", "Google Sheets"], l: [["Code", "#"]] },
+  { n: "Fantasy Realm", c: "Game", img: "images/fantasy-realm.png", d: "A fantasy RPG with combat, saved progress, and an admin mode.", s: ["Python", "PyQt6"], l: [["Code", "#"]] },
+];
+let projFilter = "All";
+
+const SCHOOLS = [
+  { n: "ISTAD", m: "Technology institute · Cambodia", d: "Student at ISTAD, building full-stack projects alongside classes.", now: true },
+  { n: "Online courses", m: "Add your own", d: "List the courses, bootcamps, or schools you have learned from.", ph: true },
+];
+
+const TIMELINE = [ // replace 20XX with real years
+  "# My timeline",
+  "## 20XX — Starting out",
+  "- Wrote my first lines of code.",
+  "",
+  "## 20XX — Learning the web",
+  "- HTML, CSS, and JavaScript.",
+  "",
+  "## 20XX — Full-stack projects",
+  "- Flask, FastAPI, Next.js, and databases.",
+  "",
+  "## Now — ISTAD",
+  "- Building DengMun, a Khmer-first scam checker.",
+];
+
+/* ---------- Render ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const chip = (t) => `<li class="px-3 py-1 rounded-full bg-bg border border-line text-sm">${t}</li>`;
+const card = "glow rounded-2xl border border-line bg-panel/85 p-6";
+const title = (t) => `<h2 class="font-cyber font-black uppercase text-3xl sm:text-4xl mb-10">${t}</h2>`;
+const win = (name, body) => `<div class="rounded-2xl border border-line bg-panel/90 overflow-hidden">
+  <div class="flex items-center gap-2 px-4 py-3 border-b border-line"><i class="h-3 w-3 rounded-full bg-[#ff5f56]"></i><i class="h-3 w-3 rounded-full bg-[#ffbd2e]"></i><i class="h-3 w-3 rounded-full bg-[#27c93f]"></i><span class="ml-3 font-mono text-xs text-soft">${name}</span></div>${body}</div>`;
+
+const VIEWS = {
+  about: () => title("About me") + win("guest@los.dev: ~ (bash)", `<div class="p-6 font-mono text-sm sm:text-base leading-relaxed space-y-5">
+    <div><p><span class="text-neon">guest@los.dev:~$</span> whoami</p>
+    <p class="mt-1">I’m a full-stack developer from <span class="text-neon">Cambodia</span>. I study at ISTAD and build web apps, desktop tools, and games, on my own and in teams.</p></div>
+    <div><p><span class="text-neon">guest@los.dev:~$</span> cat focus.txt</p>
+    <p class="mt-1 text-soft">// What I care about:</p>
+    <p>› products that read and feel natural in Khmer</p><p>› clean interfaces with careful details</p><p>› shipping real projects, not just tutorials</p></div></div>`),
+
+  skills: () => title("Skills") + `<div class="grid lg:grid-cols-2 gap-6">${SKILLS.map(([g, items]) =>
+    `<div class="rounded-2xl border border-line bg-panel/85 p-5 ${items.length > 3 ? "lg:col-span-2" : ""}"><h3 class="font-mono text-neon text-sm pb-3 mb-4 border-b border-line">./${g}</h3>
+    <div class="grid grid-cols-2 sm:grid-cols-3 ${items.length > 3 ? "md:grid-cols-4" : ""} gap-3">${items.map(([n, lv, src, inv]) => {
+      const [label, w] = LEVELS[lv];
+      return `<div class="glow rounded-xl border border-line bg-bg/70 p-4 text-center">
+        <div class="h-10 grid place-items-center">${src ? `<img src="${src}" alt="" data-n="${n}" class="h-9 w-9 object-contain ${inv ? "brightness-0 invert" : ""}" loading="lazy" onerror="noLogo(this)">` : `<span class="font-cyber font-black text-2xl text-neon">${n[0]}</span>`}</div>
+        <p class="mt-2 text-sm font-semibold">${n}</p><p class="text-xs text-soft">${label}</p>
+        <div class="mt-2 h-1.5 rounded-full bg-line overflow-hidden"><div class="bar h-full rounded-full bg-neon" style="width:0" data-w="${w}"></div></div></div>`;
+    }).join("")}</div></div>`).join("")}</div>`,
+
+  credentials: () => title("Credentials") + `<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">${CERTS.map(c =>
+    `<div class="${card} !p-4"><button type="button" data-zoom="${c.img}" data-alt="${c.t}" aria-label="Enlarge ${c.t}" class="block w-full aspect-[4/3] rounded-lg overflow-hidden border border-line bg-bg grid place-items-center">
+      <img src="${c.img}" alt="${c.t} certificate" class="h-full w-full object-contain" loading="lazy" onerror="noImg(this)"></button>
+      <p class="mt-4 font-cyber font-semibold">${c.t}</p><p class="mt-1 text-soft">${c.i}</p><p class="mt-3 font-mono text-sm text-neon">${c.y}</p></div>`).join("")}</div>`,
+
+  projects: () => {
+    const cats = ["All", ...new Set(PROJECTS.map(p => p.c))];
+    const list = PROJECTS.filter(p => projFilter === "All" || p.c === projFilter);
+    return title("Projects") + `<div class="flex flex-wrap gap-2 mb-8 -mt-4">${cats.map(c =>
+      `<button type="button" data-filter="${c}" class="px-4 py-1.5 rounded-full border text-sm font-semibold ${c === projFilter ? "border-neon text-neon bg-neon/10" : "border-line text-soft hover:border-neon hover:text-white"}">${c}</button>`).join("")}</div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">${list.map(p =>
+      `<article class="glow rounded-2xl border border-line bg-panel/85 flex flex-col">
+        <div class="flex items-center gap-1.5 px-4 py-2.5 border-b border-line"><i class="h-2.5 w-2.5 rounded-full bg-[#ff5f56]"></i><i class="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]"></i><i class="h-2.5 w-2.5 rounded-full bg-[#27c93f]"></i></div>
+        <button type="button" data-zoom="${p.img}" data-alt="${p.n}" aria-label="Enlarge ${p.n} screenshot" class="block w-full aspect-[16/10] bg-bg grid place-items-center overflow-hidden">
+          <img src="${p.img}" alt="${p.n} screenshot" class="h-full w-full object-cover object-top" loading="lazy" onerror="noImg(this)"></button>
+        <div class="p-5 flex flex-col flex-1"><h3 class="font-cyber font-semibold text-lg">${p.n}</h3>
+        <p class="mt-2 text-soft leading-relaxed flex-1">${p.d}</p>
+        <ul class="mt-4 flex flex-wrap gap-2">${p.s.map(chip).join("")}</ul>
+        <div class="mt-4 flex gap-4 text-sm font-semibold">${p.l.map(([a, h]) => `<a href="${h}" class="text-neon hover:underline">${a}</a>`).join("")}</div></div></article>`).join("")}</div>`;
+  },
+
+  education: () => title("Education") + `<div class="grid sm:grid-cols-2 gap-6">${SCHOOLS.map(s =>
+    `<div class="${card} ${s.ph ? "border-dashed" : ""}"><h3 class="font-cyber font-semibold text-xl">${s.now ? '<span class="inline-block h-2.5 w-2.5 rounded-full bg-neon mr-2 align-middle"></span>' : ""}${s.n}</h3>
+    <p class="mt-1 font-mono text-sm text-soft">${s.m}</p><p class="mt-4 leading-relaxed">${s.d}</p></div>`).join("")}</div>`,
+
+  timeline: () => title("Timeline") + win("timeline.md", `<div class="p-6 font-mono text-sm sm:text-base leading-relaxed">${TIMELINE.map((l, i) => {
+    const h = l.startsWith("#");
+    return `<div class="code-row"><span class="text-soft/50 text-right select-none">${String(i + 1).padStart(2, "0")}</span><span class="${h ? "text-neon font-medium" : ""}">${l || "&nbsp;"}</span></div>`;
+  }).join("")}</div>`),
+};
+
+const tablist = $("#tablist"), panels = $("#panels");
+TABS.forEach(([id, label]) => {
+  const b = document.createElement("button");
+  b.id = "tab-" + id; b.type = "button"; b.setAttribute("role", "tab"); b.dataset.tab = id; b.textContent = label;
+  b.className = "tab sm:shrink-0 px-2 sm:px-5 py-3 sm:py-4 text-sm font-semibold text-center border-b-2 border-transparent text-soft hover:text-white";
+  tablist.appendChild(b);
+});
+tablist.insertAdjacentHTML("beforeend", '<span id="ind" class="absolute bottom-0 h-0.5 bg-neon transition-all duration-300 ease-out" style="left:0;width:0"></span>');
+
+function show(id, scroll) {
+  if (!VIEWS[id]) id = "about";
+  document.querySelectorAll(".tab").forEach(t => {
+    const on = t.dataset.tab === id;
+    t.setAttribute("aria-selected", on);
+    t.classList.toggle("text-neon", on);
+    t.classList.toggle("text-soft", !on);
+  });
+  panels.innerHTML = `<section role="tabpanel" aria-labelledby="tab-${id}" class="panel">${VIEWS[id]()}</section>`;
+  requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll("[data-w]").forEach(el => el.style.width = el.dataset.w + "%")));
+  panels.querySelectorAll(".glow").forEach((el, i) => { el.classList.add("stag"); el.style.setProperty("--i", i); });
+  placeInd();
+  const h2 = panels.querySelector("h2");
+  if (motionReady && h2) scramble(h2, h2.textContent, 600);
+  history.replaceState(null, "", "#" + id);
+  if (scroll) $("#tabs").scrollIntoView({ behavior: "smooth" });
+}
+tablist.addEventListener("click", e => { const t = e.target.closest(".tab"); if (t) show(t.dataset.tab, true); });
+document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => {
+  if (b.dataset.go === "contact") $("#contact").scrollIntoView({ behavior: "smooth" });
+  else show(b.dataset.go, true);
+}));
+show(location.hash.slice(1));
+$("#year").textContent = new Date().getFullYear();
+
+/* ---------- Certificate images: fallback + click to enlarge ---------- */
+function noImg(el) {
+  const s = document.createElement("span");
+  s.className = "px-4 text-center text-sm text-soft";
+  s.textContent = "Add your image: " + el.getAttribute("src");
+  el.replaceWith(s);
+}
+const lb = $("#lb"), lbimg = $("#lbimg");
+const closeLb = () => { lb.classList.add("hidden"); lb.classList.remove("flex"); };
+document.addEventListener("click", e => {
+  const z = e.target.closest("[data-zoom]");
+  if (z && z.querySelector("img")) { lbimg.src = z.dataset.zoom; lbimg.alt = z.dataset.alt; lb.classList.remove("hidden"); lb.classList.add("flex"); }
+  else if (e.target.closest("#lb")) closeLb();
+});
+addEventListener("keydown", e => { if (e.key === "Escape") closeLb(); });
+document.addEventListener("click", e => { const f = e.target.closest("[data-filter]"); if (f) { projFilter = f.dataset.filter; show("projects"); } });
+function noLogo(el) {
+  const s = document.createElement("span");
+  s.className = "font-cyber font-black text-2xl text-neon";
+  s.textContent = (el.dataset.n || "?")[0];
+  el.replaceWith(s);
+}
+
+/* ---------- Role typing ---------- */
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const roleEl = $("#role");
+if (reduce) { roleEl.textContent = ROLES[0]; roleEl.classList.remove("caret"); }
+else {
+  let r = 0, c = 0, del = false;
+  (function tick() {
+    const w = ROLES[r];
+    c += del ? -1 : 1;
+    roleEl.textContent = w.slice(0, c);
+    let wait = del ? 35 : 80;
+    if (!del && c === w.length) { del = true; wait = 1400; }
+    else if (del && c === 0) { del = false; r = (r + 1) % ROLES.length; wait = 350; }
+    setTimeout(tick, wait);
+  })();
+}
+
+/* ---------- Card spotlight ---------- */
+document.addEventListener("pointermove", e => {
+  const g = e.target.closest && e.target.closest(".glow");
+  if (!g) return;
+  const b = g.getBoundingClientRect();
+  g.style.setProperty("--mx", e.clientX - b.left + "px");
+  g.style.setProperty("--my", e.clientY - b.top + "px");
+  if (!reduce) {
+    const px = (e.clientX - b.left) / b.width - .5, py = (e.clientY - b.top) / b.height - .5;
+    g.style.transform = `perspective(800px) rotateX(${-py * 6}deg) rotateY(${px * 6}deg) translateY(-2px)`;
+  }
+});
+document.addEventListener("pointerout", e => {
+  const g = e.target.closest && e.target.closest(".glow");
+  if (g && !g.contains(e.relatedTarget)) g.style.transform = "";
+});
+
+/* ---------- Tech background: node network + rising light lines ---------- */
+const cv = $("#bg"), cx = cv.getContext("2d");
+const mouse = { x: -9999, y: -9999 };
+let gx = -9999, gy = -9999, ripples = [];
+let W, H, dpr, hy, T = 0, pts = [], bars = [], sparks = [], pulses = [];
+function resize() {
+  dpr = Math.min(devicePixelRatio || 1, 2);
+  W = innerWidth; H = innerHeight; hy = H - 28;
+  cv.width = W * dpr; cv.height = H * dpr;
+  cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const n = Math.min(85, Math.floor(W * H / 17000));
+  pts = Array.from({ length: n }, () => ({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .4, vy: (Math.random() - .5) * .4, r: Math.random() * 1.5 + .7 }));
+  const m = Math.min(170, Math.floor(W / 9));
+  bars = Array.from({ length: m }, () => ({ x: Math.random() * W, h: (Math.random() ** 2 * .5 + .08) * H, sp: Math.random() * .8 + .3, ph: Math.random() * 6.28, a: Math.random() * .5 + .35, w: Math.random() < .2 ? 2 : 1 }));
+  sparks = []; pulses = [];
+}
+function frame() {
+  T += .016;
+  cx.clearRect(0, 0, W, H);
+
+  // soft light that follows the cursor
+  if (mouse.x > -999) {
+    if (gx < -999) { gx = mouse.x; gy = mouse.y; }
+    gx += (mouse.x - gx) * .12; gy += (mouse.y - gy) * .12;
+    const cg = cx.createRadialGradient(gx, gy, 0, gx, gy, 300);
+    cg.addColorStop(0, "rgba(57,255,136,.11)"); cg.addColorStop(1, "rgba(57,255,136,0)");
+    cx.fillStyle = cg; cx.fillRect(gx - 300, gy - 300, 600, 600);
+  }
+
+  // glowing horizon
+  cx.save(); cx.translate(W / 2, hy); cx.scale(1, .22);
+  const glow = cx.createRadialGradient(0, 0, 0, 0, 0, W * .6);
+  glow.addColorStop(0, "rgba(57,255,136,.30)"); glow.addColorStop(.4, "rgba(57,255,136,.10)"); glow.addColorStop(1, "rgba(57,255,136,0)");
+  cx.fillStyle = glow; cx.fillRect(-W, -W, W * 2, W * 2); cx.restore();
+
+  // rising lines of light (they grow toward the cursor)
+  for (const b of bars) {
+    const dx = b.x - mouse.x;
+    const boost = 1 + 1.1 * Math.exp(-(dx * dx) / 24200);
+    const h = Math.min(b.h * (.6 + .4 * Math.sin(T * b.sp + b.ph)) * boost, hy - 10);
+    const gr = cx.createLinearGradient(0, hy, 0, hy - h);
+    gr.addColorStop(0, `rgba(57,255,136,${b.a})`); gr.addColorStop(1, "rgba(57,255,136,0)");
+    cx.fillStyle = gr; cx.fillRect(b.x, hy - h, b.w, h);
+    if (!reduce && sparks.length < 160 && Math.random() < .004) sparks.push({ x: b.x, y: hy - h, v: Math.random() * .8 + .3, life: 1 });
+  }
+  sparks = sparks.filter(s => s.life > 0);
+  for (const s of sparks) { s.y -= s.v; s.life -= .006; cx.fillStyle = `rgba(57,255,136,${s.life * .8})`; cx.fillRect(s.x, s.y, 1.5, 1.5); }
+  const hl = cx.createLinearGradient(0, 0, W, 0);
+  hl.addColorStop(0, "rgba(57,255,136,0)"); hl.addColorStop(.5, "rgba(190,255,220,.95)"); hl.addColorStop(1, "rgba(57,255,136,0)");
+  cx.save(); cx.shadowColor = "#39FF88"; cx.shadowBlur = 14; cx.fillStyle = hl; cx.fillRect(0, hy, W, 2); cx.restore();
+
+  // node network
+  for (const p of pts) {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0 || p.x > W) p.vx *= -1;
+    if (p.y < 0 || p.y > H) p.vy *= -1;
+    const dx = p.x - mouse.x, dy = p.y - mouse.y, d = Math.hypot(dx, dy);
+    if (d < 140 && d > 0) { const f = (140 - d) / 140; p.x += dx / d * f * 3; p.y += dy / d * f * 3; }
+  }
+  const edges = [];
+  for (let i = 0; i < pts.length; i++) {
+    const a = pts[i];
+    for (let j = i + 1; j < pts.length; j++) {
+      const b = pts[j], d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d < 130) { cx.strokeStyle = `rgba(57,255,136,${(1 - d / 130) * .2})`; cx.beginPath(); cx.moveTo(a.x, a.y); cx.lineTo(b.x, b.y); cx.stroke(); edges.push([i, j]); }
+    }
+    const dm = Math.hypot(a.x - mouse.x, a.y - mouse.y);
+    if (dm < 190) { cx.strokeStyle = `rgba(255,255,255,${(1 - dm / 190) * .35})`; cx.beginPath(); cx.moveTo(a.x, a.y); cx.lineTo(mouse.x, mouse.y); cx.stroke(); }
+    cx.fillStyle = "rgba(57,255,136,.7)"; cx.beginPath(); cx.arc(a.x, a.y, a.r, 0, 6.283); cx.fill();
+  }
+  // data pulses travelling along links
+  if (!reduce && edges.length && pulses.length < 14 && Math.random() < .05) { const e = edges[(Math.random() * edges.length) | 0]; pulses.push({ a: e[0], b: e[1], t: 0 }); }
+  pulses = pulses.filter(p => p.t < 1 && pts[p.a] && pts[p.b]);
+  for (const p of pulses) {
+    p.t += .025;
+    const a = pts[p.a], b = pts[p.b], x = a.x + (b.x - a.x) * p.t, y = a.y + (b.y - a.y) * p.t;
+    cx.fillStyle = "rgba(57,255,136,.25)"; cx.beginPath(); cx.arc(x, y, 6, 0, 6.283); cx.fill();
+    cx.fillStyle = "#fff"; cx.beginPath(); cx.arc(x, y, 2, 0, 6.283); cx.fill();
+  }
+  // click ripples
+  ripples = ripples.filter(r => r.r < 240);
+  for (const r of ripples) { r.r += 6; cx.strokeStyle = `rgba(57,255,136,${1 - r.r / 240})`; cx.lineWidth = 2; cx.beginPath(); cx.arc(r.x, r.y, r.r, 0, 6.283); cx.stroke(); }
+  cx.lineWidth = 1;
+  if (!reduce) requestAnimationFrame(frame);
+}
+addEventListener("resize", () => { resize(); if (reduce) frame(); });
+addEventListener("pointermove", e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+addEventListener("pointerleave", () => { mouse.x = mouse.y = -9999; });
+addEventListener("pointerdown", e => { // click sends a shockwave through nearby nodes
+  for (const p of pts) { const dx = p.x - e.clientX, dy = p.y - e.clientY, d = Math.hypot(dx, dy);
+    if (d < 260 && d > 0) { p.vx += dx / d * (260 - d) / 60; p.vy += dy / d * (260 - d) / 60; } }
+});
+setInterval(() => { for (const p of pts) { p.vx = Math.max(-1.2, Math.min(1.2, p.vx * .985)); p.vy = Math.max(-1.2, Math.min(1.2, p.vy * .985)); } }, 100);
+resize(); frame();
+
+/* ---------- Custom cursor ---------- */
+if (matchMedia("(pointer: fine)").matches && !reduce) {
+  document.documentElement.classList.add("cur-on");
+  const dot = $("#dot"), ring = $("#ring");
+  let rx = innerWidth / 2, ry = innerHeight / 2, tx = rx, ty = ry;
+  addEventListener("pointermove", e => { tx = e.clientX; ty = e.clientY; dot.style.transform = `translate(${tx}px,${ty}px)`; });
+  (function loop() { rx += (tx - rx) * .16; ry += (ty - ry) * .16; ring.style.transform = `translate(${rx}px,${ry}px)`; requestAnimationFrame(loop); })();
+  document.addEventListener("pointerover", e => ring.classList.toggle("big", !!e.target.closest("a, button, .glow")));
+}
+
+/* ---------- Motion extras ---------- */
+var motionReady = false;
+function scramble(el, text, ms) {
+  if (reduce) { el.textContent = text; return; }
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#<>/", t0 = performance.now();
+  (function step(now) {
+    const p = Math.min((now - t0) / ms, 1), n = Math.floor(p * text.length);
+    el.textContent = text.slice(0, n) + Array.from(text.slice(n), c => c === " " ? " " : chars[(Math.random() * chars.length) | 0]).join("");
+    if (p < 1) requestAnimationFrame(step); else el.textContent = text;
+  })(t0);
+}
+function placeInd() {
+  const a = $(".tab[aria-selected='true']"), i = $("#ind");
+  if (a && i) { i.style.left = a.offsetLeft + "px"; i.style.width = a.offsetWidth + "px"; }
+}
+placeInd();
+if (document.fonts) document.fonts.ready.then(placeInd);
+addEventListener("resize", placeInd);
+addEventListener("load", placeInd);
+
+if (!reduce) {
+  const nm = $("#name");
+  scramble(nm, "Los", 900);
+  nm.addEventListener("pointerenter", () => scramble(nm, "Los", 600));
+  const av = $("#avatar");
+  addEventListener("pointermove", e => { av.style.transform = `translate(${(e.clientX / innerWidth - .5) * 16}px, ${(e.clientY / innerHeight - .5) * 16}px)`; });
+  document.addEventListener("pointermove", e => { // hero buttons lean toward the cursor
+    const b = e.target.closest("[data-go], [data-mag]"); if (!b) return;
+    const r = b.getBoundingClientRect();
+    b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .22}px, ${(e.clientY - r.top - r.height / 2) * .32}px)`;
+  });
+  document.addEventListener("pointerout", e => { const b = e.target.closest("[data-go], [data-mag]"); if (b && !b.contains(e.relatedTarget)) b.style.transform = ""; });
+  addEventListener("pointerdown", e => ripples.push({ x: e.clientX, y: e.clientY, r: 0 }));
+}
+const prog = $("#prog");
+addEventListener("scroll", () => { const m = document.documentElement.scrollHeight - innerHeight; prog.style.transform = `scaleX(${m > 0 ? scrollY / m : 0})`; }, { passive: true });
+motionReady = true;
+</script>
+</body>
+</html>
